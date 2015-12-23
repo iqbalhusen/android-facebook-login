@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -25,6 +26,9 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        Log.v("FBLogin", "onCreateView");
+
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
 
@@ -36,7 +40,10 @@ public class MainActivityFragment extends Fragment {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-
+                CharSequence text = "Login success!";
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(getActivity(), text, duration);
+                toast.show();
                 Log.v("FBLogin", "Yeah");
                 // App code
             }
@@ -48,6 +55,11 @@ public class MainActivityFragment extends Fragment {
 
             @Override
             public void onError(FacebookException exception) {
+                CharSequence text = "Login error!";
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(getActivity(), text, duration);
+                toast.show();
+                Log.v("FBLogin", "onError");
                 // App code
             }
         });
@@ -58,6 +70,8 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.v("FBLogin", "onActivityResult");
+
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
