@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -74,26 +75,31 @@ public class MainActivity extends AppCompatActivity {
     private void onFblogin() {
         callbackManager = CallbackManager.Factory.create();
 
-        // Set permissions
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
 
         LoginManager.getInstance().registerCallback(
                 callbackManager,
                 new FacebookCallback<LoginResult>() {
+
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-
                         System.out.println("Success");
-                        GraphRequest.newMeRequest(
-                                loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+
+                        GraphRequest request = GraphRequest.newMeRequest(
+                                loginResult.getAccessToken(), // OR AccessToken.getCurrentAccessToken(),
+                                new GraphRequest.GraphJSONObjectCallback() {
+
                                     @Override
                                     public void onCompleted(JSONObject json, GraphResponse response) {
+
                                         if (response.getError() != null) {
                                             // handle error
                                             System.out.println("ERROR");
                                         }
+
                                         else {
                                             System.out.println("Success");
+
                                             try {
 
                                                 String jsonresult = String.valueOf(json);
@@ -110,7 +116,14 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                     }
 
-                                }).executeAsync();
+                                }
+                        );
+
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", "id, first_name, last_name, age_range, locale, timezone, gender, birthday, email");
+                        request.setParameters(parameters);
+
+                        request.executeAsync();
 
                     }
 
